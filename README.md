@@ -15,4 +15,10 @@ In Project 2, I built the ALU, after building half, full and 16 bit adders, as w
 
 In Project 3, focusing on sequential logic, I built a single bit register from elementary data flip flops, and expanded that up to RAM with 16K 16-bit registers. I also implemented a Program Counter out of DMux, a Register and an Incrementer.
 
+## Project 4
+
+In Project 4, I used the HACK machine language to write Mult.asm, which multiplies 2 numbers together, and Fill.asm, which fills the screen with black pixels whilst a key is pressed, and empties it if a key is not pressed.
+
+
+
 ### More Coming Soon ###
