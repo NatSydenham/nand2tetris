@@ -17,8 +17,7 @@
   D=A // Store the address of the first screen pixel in data variable.
   @pix // Select a register used to hold current pixel.
   M=D // Store current pixel in register.
-
-(LOOP)
+  
   // View contents of keyboard and execute appropriately.
   @KBD // Select the keyboard.
   D=M // Probe the value of the keyboard.
