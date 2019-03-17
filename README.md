@@ -19,6 +19,8 @@ In Project 3, focusing on sequential logic, I built a single bit register from e
 
 In Project 4, I used the HACK machine language to write Mult.asm, which multiplies 2 numbers together, and Fill.asm, which fills the screen with black pixels whilst a key is pressed, and empties it if a key is not pressed.
 
+## Project 5
 
+Project 5 completed the Hardware implementation, by building a CPU, memory, and combining them with a builtin ROM32K chip in order to complete the Hack computer.
 
 ### More Coming Soon ###
