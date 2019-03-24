@@ -23,4 +23,8 @@ In Project 4, I used the HACK machine language to write Mult.asm, which multipli
 
 Project 5 completed the Hardware implementation, by building a CPU, memory, and combining them with a builtin ROM32K chip in order to complete the Hack computer.
 
+## Project 6
+
+In Project 6, I implemented a 2 pass assembler for the Hack machine language in Java. To run the assembler, build/compile it and then run with the path to a .asm file (written in the Hack assembly language) that you wish to assemble as an argument.
+
 ### More Coming Soon ###
