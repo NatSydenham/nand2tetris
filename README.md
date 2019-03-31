@@ -27,4 +27,8 @@ Project 5 completed the Hardware implementation, by building a CPU, memory, and 
 
 In Project 6, I implemented a 2 pass assembler for the Hack machine language in Java. To run the assembler, build/compile it and then run with the path to a .asm file (written in the Hack assembly language) that you wish to assemble as an argument.
 
+## Project 7
+
+In Project 7, I started on the software layer for the Hack computer, writing a VM translator which can handle arithmetic, boolean and logical commands, as well as memory access commands, and can convert .vm files into the Hack assembly language.
+
 ### More Coming Soon ###
