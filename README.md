@@ -31,4 +31,10 @@ In Project 6, I implemented a 2 pass assembler for the Hack machine language in 
 
 In Project 7, I started on the software layer for the Hack computer, writing a VM translator which can handle arithmetic, boolean and logical commands, as well as memory access commands, and can convert .vm files into the Hack assembly language.
 
+## Project 8
+
+In Project 8, I completed the VM translator, implementing functions and branching, as well as the ability to process directories. Please note that if you choose to translate a directory, you *MUST* supply a Sys.vm file containing Sys.init, otherwise the translation will be incorrect. Individual files will be translated fine without, though.    
+
+I also implemented some bug fixes. Note that this means my implementation of Project 7 DOES contain bugs. They will be left in as a learning exercise - see, for example, the change from .equals to .contains in the parser, to handle inline comments.
+
 ### More Coming Soon ###
