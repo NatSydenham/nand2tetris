@@ -34,6 +34,10 @@ public class JackTokeniser {
         this.pos = 0;
     }
 
+    public String getCurrentToken() {
+        return currentToken.toString();
+    }
+
     /**
      * Checks to see if there are more tokens in the input.
      *
@@ -50,9 +54,8 @@ public class JackTokeniser {
      * Advances to the next token. Should only be called if hasMoreTokens returns true.
      */
 
-    public void advance() {
+    public void advance() throws Exception {
         currentToken = new StringBuilder();
-
         while (pos < len) {
             if (Character.toString(input.charAt(pos)).matches(SYMBOLS)) {
                 // If we have some input already, we do not want to include the symbol as part of the token.

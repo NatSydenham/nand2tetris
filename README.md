@@ -44,6 +44,6 @@ arbitrary high level language.
 
 ## Project 10
 
-In Project 10, I implemented the syntax analysis function of the Jack compiler, which takes a .jack file or directory containing multiple .jack files, and converts them into .xml parse trees. My implementation of the syntax analyser differs from the suggested method as I tokenise and analyse on separate passes, rather than implementing both in one pass. This is to be refactored.
+In Project 10, I implemented the syntax analysis function of the Jack compiler, which takes a .jack file or directory containing multiple .jack files, and converts them into .xml parse trees. Originally, I left the tokenisation and parsing as two separate passes through the file, which was inefficient. I fixed this by refactoring the program to tokenise and parse in the same pass by creating the tokeniser in the compilation class.
 
 ### More Coming Soon ###

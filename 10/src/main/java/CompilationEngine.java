@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.List;
 import java.util.Scanner;
 
 public class CompilationEngine {
@@ -7,12 +8,12 @@ public class CompilationEngine {
     private String currentToken;
     private File inFile;
     private File outFile;
-    private Scanner scan;
     private PrintWriter writer;
+    private JackTokeniser tokeniser;
 
     // REGEX
 
-    private final String BINARY_OPERATORS = "^(\\+|-|\\*|/|&amp;|\\||&gt;|&lt;|=)$";
+    private final String BINARY_OPERATORS = "^(\\+|-|\\*|/|&|\\||>|<|=)$";
     private final String CLASSVARDEC_REGEX = "^(static|field)$";
     private final String SUBROUTINEDEC_REGEX = "^(constructor|function|method)$";
     private final String TYPE_REGEX = "^(int|char|boolean)$";
@@ -36,8 +37,8 @@ public class CompilationEngine {
     public CompilationEngine(String inPath, String outPath) throws IOException {
         this.inFile = new File(inPath);
         this.outFile = new File(outPath);
-        this.scan = new Scanner(inFile);
         this.writer = new PrintWriter(new BufferedWriter(new FileWriter(outFile)));
+        this.tokeniser = new JackTokeniser(inPath);
     }
 
     /**
@@ -46,29 +47,37 @@ public class CompilationEngine {
      */
 
     public void compileClass() throws Exception {
-        currentToken = scan.nextLine();
-        while (currentToken.trim().equals("<tokens>")) {
-            currentToken = scan.nextLine();
-        }
+        advance();
         writer.println("<class>");
         eat("class");
 
         // class name must be same as file name
-        String fileName = inFile.getName().replace("T.xml", "");
+        String fileName = inFile.getName().replace(".jack", "");
         eat(fileName.substring(0, 1).toUpperCase() + fileName.substring(1));
 
         // handle block
         eat("{");
-        while (processToken().matches(CLASSVARDEC_REGEX)) {
+        while (currentToken.matches(CLASSVARDEC_REGEX)) {
             compileClassVarDec();
         }
 
-        while (processToken().matches(SUBROUTINEDEC_REGEX)) {
+        while (currentToken.matches(SUBROUTINEDEC_REGEX)) {
             compileSubroutine();
         }
         eat("}");
         writer.println("</class>");
-        inFile.delete();
+    }
+
+    private void advance() throws Exception {
+        do {
+            tokeniser.advance();
+            currentToken = tokeniser.getCurrentToken();
+
+            if (!tokeniser.hasMoreTokens()){
+                return;
+            }
+        }
+        while (tokeniser.tokenType() == Token.WHITESPACE);
     }
 
     /**
@@ -78,7 +87,7 @@ public class CompilationEngine {
     public void compileClassVarDec() throws Exception {
         writer.println("<classVarDec>");
         // static/field
-        eat(processToken());
+        eat(currentToken);
         processVarDecs();
         writer.println("</classVarDec>");
     }
@@ -91,11 +100,11 @@ public class CompilationEngine {
 
     public void compileSubroutine() throws Exception {
         writer.println("<subroutineDec>");
-        eat(processToken());
+        eat(currentToken);
 
         // void or type
-        if (processToken().matches("^void$")) {
-            eat(processToken());
+        if (currentToken.matches("^void$")) {
+            eat(currentToken);
         } else {
             processType();
         }
@@ -111,7 +120,7 @@ public class CompilationEngine {
         eat("{");
 
         // optional varDecs
-        while (processToken().equals("var")) {
+        while (currentToken.equals("var")) {
             compileVarDec();
         }
 
@@ -131,9 +140,9 @@ public class CompilationEngine {
 
     public void compileParameterList() throws Exception {
         writer.println("<parameterList>");
-        while (processToken().matches(TYPE_REGEX) || currentToken.contains("<identifier>")) {
+        while (currentToken.matches(TYPE_REGEX) || tokeniser.tokenType() == Token.IDENTIFIER) {
             processType();
-            while (processToken().equals(",")) {
+            while (currentToken.equals(",")) {
                 eat(",");
                 //type
                 processType();
@@ -162,8 +171,8 @@ public class CompilationEngine {
 
     public void compileStatements() throws Exception {
         writer.println("<statements>");
-        while (processToken().matches(STATEMENT_BEGINNING_REGEX)) {
-            switch (processToken()) {
+        while (currentToken.matches(STATEMENT_BEGINNING_REGEX)) {
+            switch (currentToken) {
                 case "if":
                     compileIf();
                     break;
@@ -205,7 +214,7 @@ public class CompilationEngine {
         writer.println("<letStatement>");
         eat("let");
         processIdentifier();
-        if (processToken().equals("[")) {
+        if (currentToken.equals("[")) {
             eat("[");
             compileExpression();
             eat("]");
@@ -240,7 +249,7 @@ public class CompilationEngine {
 
         // handle optional else clause.
 
-        if (processToken().equals("else")) {
+        if (currentToken.equals("else")) {
             eat("else");
             eat("{");
             compileStatements();
@@ -257,7 +266,7 @@ public class CompilationEngine {
     public void compileReturn() throws Exception {
         writer.println("<returnStatement>");
         eat("return");
-        if (!processToken().equals(";")) {
+        if (!currentToken.equals(";")) {
             compileExpression();
         }
         eat(";");
@@ -271,8 +280,8 @@ public class CompilationEngine {
     public void compileExpression() throws Exception {
         writer.println("<expression>");
         compileTerm();
-        while ((processToken().matches(BINARY_OPERATORS))) {
-            eat(processToken());
+        while ((currentToken.matches(BINARY_OPERATORS))) {
+            eat(currentToken);
             compileTerm();
         }
         writer.println("</expression>");
@@ -299,27 +308,31 @@ public class CompilationEngine {
         writer.println("<term>");
 
         // Lookahead
-        if (currentToken.contains("<identifier>")) {
-            eat(processToken());
-            if (processToken().equals("[")) {
+        if (tokeniser.tokenType() == Token.IDENTIFIER) {
+            eat(currentToken);
+            if (currentToken.equals("[")) {
                 eat("[");
                 compileExpression();
                 eat("]");
-            } else if (processToken().equals(".")) {
+            } else if (currentToken.equals(".")) {
                 eat(".");
                 processIdentifier();
                 eat("(");
                 compileExpressionList();
                 eat(")");
+            } else if (currentToken.equals("(")){
+                eat("(");
+                compileExpression();
+                eat(")");
             }
-        } else if (currentToken.contains("<integerConstant>") ||
-                currentToken.contains("<stringConstant>") ||
-                processToken().matches(KEYWORD_CONSTANT_REGEX)) {
-            eat(processToken());
-        } else if (processToken().matches(UNARY_OP_REGEX)) {
-            eat(processToken());
+        } else if (tokeniser.tokenType() == Token.INT_CONST ||
+                tokeniser.tokenType() == Token.STRING_CONST ||
+                currentToken.matches(KEYWORD_CONSTANT_REGEX)) {
+            eat(currentToken);
+        } else if (currentToken.matches(UNARY_OP_REGEX)) {
+            eat(currentToken);
             compileTerm();
-        } else if (processToken().equals("(")) {
+        } else if (currentToken.equals("(")) {
             eat("(");
             compileExpression();
             eat(")");
@@ -336,9 +349,9 @@ public class CompilationEngine {
 
     public void compileExpressionList() throws Exception {
         writer.println("<expressionList>");
-        if (!processToken().equals(")")) {
+        if (!currentToken.equals(")")) {
             compileExpression();
-            while (processToken().equals(",")) {
+            while (currentToken.equals(",")) {
                 eat(",");
                 compileExpression();
             }
@@ -352,30 +365,25 @@ public class CompilationEngine {
     }
 
     private void eat(String token) throws Exception {
-        String processedToken = processToken();
-        if (!processedToken.equals(token)) {
-            throw new Exception("Syntax Error - expected " + token + " when provided token: " + currentToken);
+        if (!currentToken.equals(token)) {
+            throw new Exception("Syntax Error - expected " + token + " when provided token: " + tokeniser.tokenType());
         } else {
-            writer.println(currentToken);
-            currentToken = scan.nextLine();
+            tokenise();
+            advance();
         }
     }
 
-    private String processToken() {
-        return currentToken.substring(currentToken.indexOf('>') + 1, currentToken.lastIndexOf('<') - 1).trim();
-    }
-
     private void processIdentifier() throws Exception {
-        if (currentToken.contains("<identifier>")) {
-            eat(processToken());
+        if (tokeniser.tokenType() == Token.IDENTIFIER) {
+            eat(currentToken);
         } else {
-            throw new Exception("Expected <identifier> instead of " + currentToken);
+            throw new Exception("Expected <identifier> instead of " + tokeniser.tokenType());
         }
     }
 
     private void processType() throws Exception {
-        if (processToken().matches(TYPE_REGEX)) {
-            eat(processToken());
+        if (currentToken.matches(TYPE_REGEX)) {
+            eat(currentToken);
             return;
         }
         processIdentifier();
@@ -386,9 +394,9 @@ public class CompilationEngine {
         processType();
         // varName
         processIdentifier();
-        while (processToken().equals(",")) {
+        while (currentToken.equals(",")) {
             // ,
-            eat(processToken());
+            eat(currentToken);
             // varName
             processIdentifier();
 
@@ -398,11 +406,11 @@ public class CompilationEngine {
 
     private void processSubroutineCall() throws Exception {
         processIdentifier();
-        if (processToken().equals("(")) {
+        if (currentToken.equals("(")) {
             eat("(");
             compileExpressionList();
             eat(")");
-        } else if (processToken().equals(".")) {
+        } else if (currentToken.equals(".")) {
             eat(".");
             processIdentifier();
             eat("(");
@@ -422,4 +430,26 @@ public class CompilationEngine {
         eat("}");
     }
 
+    private void tokenise() throws Exception {
+        Token type = tokeniser.tokenType();
+        switch (type) {
+            case KEYWORD:
+                writer.println("<keyword> " + tokeniser.keyWord() + " </keyword>");
+                break;
+            case SYMBOL:
+                writer.println("<symbol> " + tokeniser.getSym() + " </symbol>");
+                break;
+            case WHITESPACE:
+                break;
+            case STRING_CONST:
+                writer.println(("<stringConstant> " + tokeniser.stringVal() + " </stringConstant>").replaceAll("\"", ""));
+                break;
+            case INT_CONST:
+                writer.println("<integerConstant> " + tokeniser.intVal() + " </integerConstant>");
+                break;
+            case IDENTIFIER:
+                writer.println("<identifier> " + tokeniser.getIdent() + " </identifier>");
+        }
+    }
 }
+
