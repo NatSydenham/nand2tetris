@@ -37,4 +37,13 @@ In Project 8, I completed the VM translator, implementing functions and branchin
 
 I also implemented some bug fixes. Note that this means my implementation of Project 7 DOES contain bugs. They will be left in as a learning exercise - see, for example, the change from .equals to .contains in the parser, to handle inline comments.
 
+## Project 9 
+
+Project 9 involved writing programs in the high level Jack language. I did not implement this project because my goal is to understand computing systems, rather than programming in some
+arbitrary high level language.
+
+## Project 10
+
+In Project 10, I implemented the syntax analysis function of the Jack compiler, which takes a .jack file or directory containing multiple .jack files, and converts them into .xml parse trees. My implementation of the syntax analyser differs from the suggested method as I tokenise and analyse on separate passes, rather than implementing both in one pass. This is to be refactored.
+
 ### More Coming Soon ###
