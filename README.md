@@ -46,4 +46,9 @@ arbitrary high level language.
 
 In Project 10, I implemented the syntax analysis function of the Jack compiler, which takes a .jack file or directory containing multiple .jack files, and converts them into .xml parse trees. Originally, I left the tokenisation and parsing as two separate passes through the file, which was inefficient. I fixed this by refactoring the program to tokenise and parse in the same pass by creating the tokeniser in the compilation class.
 
+## Project 11
+
+Project 11 is still a work in progress - it is mostly complete however will not compile Pong or ComplexArrays correctly yet. It's just a case of ironing out the last couple of bugs. 
+
+
 ### More Coming Soon ###
