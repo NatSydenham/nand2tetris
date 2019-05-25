@@ -51,4 +51,7 @@ In Project 10, I implemented the syntax analysis function of the Jack compiler, 
 Project 11 is still a work in progress - it is mostly complete however will not compile Pong or ComplexArrays correctly yet. It's just a case of ironing out the last couple of bugs. 
 
 
-### More Coming Soon ###
+## Project 12
+
+Project 12 is a work in progress - I have implemented Math, Memory and part of Screen. 
+
