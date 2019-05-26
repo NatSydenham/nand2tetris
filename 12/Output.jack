@@ -17,10 +17,21 @@
 class Output {
 
     // Character map for displaying characters
-    static Array charMaps; 
+    static Array charMaps;
+    static Array screen;
+    static Array cmask;
+    static int cx, cy;
 
     /** Initializes the screen, and locates the cursor at the screen's top-left. */
     function void init() {
+        let screen = 16384;
+        let cx = 0;
+        let cy = 0;
+        let mask = Array.new(2);
+        let mask[0] = 255;
+        let mask[1] = -1 & 255;
+        do Output.initMap();
+        return;
     }
 
     // Initializes the character map array
@@ -176,11 +187,42 @@ class Output {
     /** Moves the cursor to the j-th column of the i-th row,
      *  and erases the character displayed there. */
     function void moveCursor(int i, int j) {
+        let cx = j;
+        let cy = i;
+        return;
+
     }
 
     /** Displays the given character at the cursor location,
      *  and advances the cursor one column forward. */
     function void printChar(char c) {
+        var Array map;
+        var int addr, mask, bitmap, index;
+        let map = Output.getMap(c);
+        let addr = (cy * 32 * 11) + (cx / 2);
+        let mask = cx & 1;
+        let index = 0;
+        
+        while (i < 11) {
+            let bitmap = map[i];
+            if (mask = 1) {
+                let bitmap = bitmap * 256;
+            }
+            let screen[addr] = screen[addr] & cmask[mask] | bitmap;
+            let addr = addr + 32;
+            let index = index + 1;
+        }
+
+        if (cx = 63) {
+            do Output.println();
+        }
+        else {
+            let cx = cx + 1;
+        }
+        
+        return;
+
+
     }
 
     /** displays the given string starting at the cursor location,

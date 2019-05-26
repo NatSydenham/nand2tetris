@@ -53,5 +53,9 @@ Project 11 is still a work in progress - it is mostly complete however will not 
 
 ## Project 12
 
-Project 12 is a work in progress - I have implemented Math, Memory and part of Screen. 
+Project 12 is a work in progress - I have implemented Math, Memory, Screen, and am partway through Output.
+
+# HIATUS
+
+Likely to be taking a hiatus from this ~ having watched the videos, and understood the algorithms, I feel like I have learned what I can from here. I may come back to implement the exercises, but I want to work on some industry-applicable topics. This was a fantastic overview of computer systems, and I learned loads. But I think it's time to get more.. actual.
 

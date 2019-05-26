@@ -23,6 +23,12 @@ class Screen {
 
     /** Erases the entire screen. */
     function void clearScreen() {
+        var int index;
+        let index = 0;
+        while (index < 8192) {
+            let screen[index] = false;
+        }
+        return;
     }
 
     /** Sets the current color, to be used for all subsequent drawXXX commands.
@@ -37,33 +43,131 @@ class Screen {
     function void drawPixel(int x, int y) {
         var int address;
         var int mask;
+        var int temp;
         
         let address = (32 * y) + (x / 16);
         let mask = Math.twoToThe(x & 15);
+        let temp = Memory.peek(address);
 
         if (currentColour) {
-            let screen[address] = screen[address] | mask;
+            let temp = (temp | mask);
         }
         else {
-            let screen[address] = screen[address] & ~mask;
+            let temp = (temp & (~mask);
         }
         return;
     }
 
     /** Draws a line from pixel (x1,y1) to pixel (x2,y2), using the current color. */
     function void drawLine(int x1, int y1, int x2, int y2) {
+        var int dx, dy, startX, startY, i, j, proportion;
         
+        let dx = x2 - x1;
+        let dy = y2 - y1;
+        let startX = Math.min(x1, x2);
+        let startY = Math.min(y1, y2);
+
+        // Diagonal lines
+
+        if (((dx < 0) & (dy > 0)) | ((dx > 0) & (dy < 0))) {
+            if (dy < 0) {
+                do Screen.drawDiagonal(x1, y1, dx, dy);
+            }
+            else {
+                do Screen.drawDiagonal(x2, y2, -dx, -dy);
+            }
+            return;
+        }
+        else {
+            let dx = Math.abs(dx);
+            let dy = Math.abs(dy);
+        }
+
+        // Handle horizontal and vertical lines
+
+        if (dx = 0) {
+            do Screen.drawHorizontal(startX, startY, dy);
+            return;
+        }
+        if (dy = 0) {
+            do Screen.drawVertical(startX, startY, dx);
+            return;
+        }
+    }
+
+    function void drawDiagonal(int x, int y, int dx, int dy) {
+        var int prop, i, j;
+        let prop = 0;
+        let i = 0;
+        let j = 0;
+
+        while ((~(i > dx)) & (~(j < dy))) {
+            do Screen.drawPixel(x + i, y + j);
+            if (prop < 0) {
+                let j = j-1;
+                let prop = prop + dx;
+            }
+            else {
+                let i = i + 1;
+                let prop = prop + dy;
+            }
+        }
+        return;
+    }
+
+    function void drawHorizontal(int x, int y, int dy){
+        var int index;
+        let index = 0;
+        while (~(index > dy)){
+            do Screen.drawPixel(x, y + index);
+            let index = index + 1;
+        }
+        return;
+    }
+
+    function void drawVertical(int x, int y, int dx) {
+        var int index;
+        let index = 0;
+        while (~(index > dx)) {
+            do Screen.drawPixel(x + index, y);
+            let index = index + 1;
+        }
+        return;
     }
 
     /** Draws a filled rectangle whose top left corner is (x1, y1)
      * and bottom right corner is (x2,y2), using the current color. */
     function void drawRectangle(int x1, int y1, int x2, int y2) {
+        var int dx, dy, startX, startY, index;
+        let dx = Math.abs(x2 - x1);
+        let dy = Math.abs(y2 - y1);
+        let startX = Math.min(x1, x2);
+        let startY = Math.min(y1, y2);
+        let index = 0;
+
+        while (i < dx) {
+            do Screen.drawHorizontal(startX + index, startY, dy);
+            let index = index + 1;
+        }
+        return;
     }
 
     /** Draws a filled circle of radius r<=181 around (x,y), using the current color. */
     function void drawCircle(int x, int y, int r) {
+        var int dy, dist;
         if (r > 181){
-            re
+            do Sys.error(3);
         }
+
+        let dy = -r;
+        while (~(dy > r)){
+            let dist = Math.sqrt((r*r) - (dy * dy));
+            do Screen.drawVertical(x - dist, x + y, 2 * dist);
+            let dy = dy + 1;
+        }
+        return;
+
+
+
     }
 }
